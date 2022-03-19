@@ -8,95 +8,36 @@ def sigmoid(z):
     return (1 / (1 + np.exp(-1 * z)))
 
 class MLP():
-    def __init__(self,xi,d,w_1,w_2,us,uoc,precision,epocas,fac_ap,n_ocultas,n_entradas,n_salida):
-        # Variables de inicialización 
-        self.xi = np.transpose(xi)
-        self.d = d
-        self.w1 = w_1
-        self.w2 = w_2
-        self.us = us
-        self.uoc = uoc
-        self.precision = precision
-        self.epocas = epocas
-        self.fac_ap = fac_ap
-        self.n_entradas = n_entradas
-        self.n_ocultas = n_ocultas
-        self.n_salida = n_salida
-        # Variables de aprendizaje
-        self.di = 0 # Salida deseada en iteracion actual
-        self.error_red = 1 # Error total de la red en una conjunto de iteraciones
-        self.Ew = 0 # Error cuadratico medio
-        self.Error_prev = 0 # Error anterior
-        self.Errores = []
-        self.Error_actual = np.zeros((len(d))) # Errores acumulados en un ciclo de muestras
-        self.Entradas = np.zeros((1,n_entradas))
-        self.un = np.zeros((n_ocultas,1)) # Potencial de activacion en neuronas ocultas
-        self.gu = np.zeros((n_ocultas,1)) # Funcion de activacion de neuronas ocultas
-        self.Y = 0.0 # Potencial de activacion en neurona de salida
-        self.y = 0.0 # Funcion de activacion en neurona de salida
-        self.epochs = 0
-        # Variables de retropropagacion
-        self.error_real = 0
-        self.ds = 0.0 # delta de salida
-        self.docu = np.zeros((n_ocultas,1)) # Deltas en neuronas ocultas
-        
-    def Operacion(self):
-        respuesta = np.zeros((len(self.d),1))
-        for p in range(len(self.d)):
-            self.Entradas = self.xi[:,p]
-            self.Propagar()
-            respuesta[p,:] = self.y
-        return respuesta.tolist()
-    
-    def Aprendizaje(self):
-        Errores = [] # Almacenar los errores de la red en un ciclo
-                
-    def Propagar(self):
-        # Operaciones en la primer capa
-        for a in range(self.n_ocultas):
-            self.un[a,:] = np.dot(self.w1[a,:], self.Entradas) + self.uoc[a,:]
-        
-        # Calcular la activacion de la neuronas en la capa oculta
-        for o in range(self.n_ocultas):
-            self.gu[o,:] = tanh(self.un[o,:])
-        
-        # Calcular Y potencial de activacion de la neuronas de salida
-        self.Y = (np.dot(self.w2,self.gu) + self.us)
-        # Calcular la salida de la neurona de salida
-        self.y = tanh(self.Y)
-    
-    def Backpropagation(self):
-        # Calcular el error
-        self.error_real = (self.di - self.y)
-        # Calcular ds
-        self.ds = (dtanh(self.Y) * self.error_real)
-        # Ajustar w2
-        self.w2 = self.w2 + (np.transpose(self.gu) * self.fac_ap * self.ds)
-        # Ajustar umbral us
-        self.us = self.us + (self.fac_ap * self.ds)
-        # Calcular docu
-        self.docu = dtanh(self.un) * np.transpose(self.w2) * self.ds
-        # Ajustar los pesos w1
-        for j in range(self.n_ocultas):
-            self.w1[j,:] = self.w1[j,:] + ((self.docu[j,:]) * self.Entradas * self.fac_ap)
-        
-        # Ajustar el umbral en las neuronas ocultas
-        for g in range(self.n_ocultas):
-            self.uoc[g,:] = self.uoc[g,:] + (self.fac_ap * self.docu[g,:])
-        
-    def Error(self):
-        # Error cuadratico medio
-        self.Ew = ((1/len(d)) * (sum(self.Error_actual)))
-        self.error_red = (self.Ew - self.Error_prev)
+    def __init__(self, i_neurons, h_layers, h_neurons, o_neurons):
+        # número de neuronas por capa
+        self.input_neurons = i_neurons
+        self.hidden_neurons = h_neurons
+        self.output_neurons = o_neurons
 
-# Funcion para obtener la tanh
-def tanh(x):
-    return np.tanh(x)
+        # número de capas ocultas
+        self.hidden_layers = h_layers - 1
 
-# Funcion para obtener la derivada de tanh x
-def dtanh(x):
-    return 1.0 - np.tanh(x)**2
+        # tasa de aprendizaje
+        self.lr = 0.1
 
-# Funcion sigmoide de x
-def sigmoide(x):
-    return 1/(1+np.exp(-x))
+        # Función para imprimir el error cuadrático medio
+        self.error_figure = None
+
+        # guarda los valores de activación de todas las capas
+        self.sigmoids = list(range(2 + self.hidden_layers))
+
+        # guarda las sensibilidades = input layer + output layer + hidden layers
+        self.sensitivities = list(range(h_layers + 1))
+
+        # matrices de pesos
+        # pesos de la entrada a la primer capa oculta
+        self.W_inputs = np.empty((self.hidden_neurons, self.input_neurons + 1))
+        # pesos de las capas ocultas menos la última
+        self.W_hiddens = np.empty((self.hidden_layers, self.hidden_neurons, self.hidden_neurons + 1))
+        # pesos de la última capa oculta y la capa final
+        self.W_outputs = np.empty((self.output_neurons, self.hidden_neurons + 1))
+        self.randomize_weights()
+        
+ def backpropagation():
+        """Realiza el método de retropropagación"""
+        # actualiza los pesos de la capa oculta final con la capa de salida
