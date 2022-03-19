@@ -50,26 +50,7 @@ class MLP():
     
     def Aprendizaje(self):
         Errores = [] # Almacenar los errores de la red en un ciclo
-        while(np.abs(self.error_red) > self.precision):
-            self.Error_prev = self.Ew
-            for i in range(len(d)):
-                self.Entradas = self.xi[:,i] # Senales de entrada por iteracion
-                self.di = self.d[i]
-                self.Propagar()
-                self.Backpropagation()
-                self.Propagar()
-                self.Error_actual[i] = (0.5)*((self.di - self.y)**2)
-            # error global de la red
-            self.Error()
-            Errores.append(self.error_red)
-            self.epochs +=1
-            # Si se alcanza un mayor numero de epocas
-            if self.epochs > self.epocas:
-                break
-        # Regresar 
-        return self.epochs,self.w1,self.w2,self.us,self.uoc,Errores
                 
-    
     def Propagar(self):
         # Operaciones en la primer capa
         for a in range(self.n_ocultas):
