@@ -23,12 +23,12 @@ class MLP:
         for act in activations:
             self.f.append(activate(act))
 
-def predict(self, x):
-    a = np.asanyarray(x)
-    for l in range (1, self.L +1):
-        z = np.dot(self.W[l], a) + self.b[l]
-        a = self.f[l](z)
-    return a
+    def backpropagation(self, x):
+        a = np.asanyarray(x)
+        for l in range (1, self.L + 1):
+            z = np.dot(self.W[l], a) + self.b[l]
+            a = self.f[l](z)
+        return a
 
 
 
