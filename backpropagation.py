@@ -29,6 +29,31 @@ class MLP:
             z = np.dot(self.W[l], a) + self.b[l]
             a = self.f[l](z)
         return a
+    def train(self, x,y, epochs=1000, learning_rate=0.1):
+        x = np.asanyarray(x)
+        y = np.asanyarray(y).reshape(self.n[-1], 1)
+
+        P = x.shape[1]
+
+        for _ in range(epochs):
+            for p in range(P):
+
+                A = [None] * (self.L + 1)
+                dA = [None] * (self.L + 1)
+
+                #Propagacion
+                A[0] = x[:, p].reshape(self.n[0], 1)
+
+                for l in range(1, self.L +1):
+                    z = np.dot(self.W[l], A[l-1]) + self.b[l]
+                    A[l], dA[l] = self.f[l](z, derivative=True)
+                
+                #Backpropagation
+                for l in range(self.L, 0, -1):
+                    if l == self.L:
+                        lg = (y[:, p] - A[l]) * dA[l]
+                    else:
+                        lg = np.dot(self.W[l+1].T, lg) * dA[l]
 
 
 
