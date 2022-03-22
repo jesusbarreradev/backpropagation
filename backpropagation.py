@@ -29,9 +29,9 @@ class MLP:
             z = np.dot(self.W[l], a) + self.b[l]
             a = self.f[l](z)
         return a
-    def train(self, x,y, epochs=1000, learning_rate=0.1):
+    def train(self, x,y, epochs = 1000, learning_rate = 0.1):
         x = np.asanyarray(x)
-        y = np.asanyarray(y).reshape(self.n[-1], 1)
+        y = np.asanyarray(y).reshape(self.n[-1], -1)
 
         P = x.shape[1]
 
@@ -54,6 +54,8 @@ class MLP:
                         lg = (y[:, p] - A[l]) * dA[l]
                     else:
                         lg = np.dot(self.W[l+1].T, lg) * dA[l]
+                    self.W[l] += learning_rate * np.dot(lg, A[l-1].T)
+                    self.b[l] += learning_rate * lg
 
 
 
